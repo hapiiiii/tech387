@@ -21,6 +21,9 @@ router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
 router.post('/login', (req, res, next) => {
     UserController.login(req, res, next)
 });
+router.post('/logout', (req, res, next) => {
+    UserController.logout(req, res, next)
+});
 
 
 // course category routes

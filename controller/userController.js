@@ -3,6 +3,9 @@ const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
 const db = require('../lib/db.js');
 
+const jwtTokenController = require('./jwtTokenController.js');
+const JwtTokenController = new jwtTokenController()
+
 class UserController {
   login(req, res, next) {
     db.query(
@@ -42,6 +45,15 @@ class UserController {
               db.query(
                 `UPDATE users SET last_login = now() WHERE id = '${result[0].id}'`
               );
+
+              try {
+                JwtTokenController.insert(token, result[0].email);
+              } catch (err) {
+                return res.status(400).send({
+                  message: 'Internal server error' + vrijednost
+                });
+              }
+
               return res.status(200).send({
                 message: 'Uspijesna prijava',
                 token,
@@ -103,6 +115,21 @@ class UserController {
         }
       }
     );
+  }
+
+  logout(req, res, next) {
+    try {
+      JwtTokenController.delete(req.body.token, req.body.email);
+    } catch (err) {
+      return res.status(400).send({
+        message: 'Internal server error' + vrijednost
+      });
+    }
+
+    
+    return res.status(200).send({
+      message: 'Uspijesna odjava',
+    });
   }
 }
 
